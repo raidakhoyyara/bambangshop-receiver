@@ -85,5 +85,9 @@ This is the place for you to write reflections:
 ### Mandatory (Subscriber) Reflections
 
 #### Reflection Subscriber-1
+1. RwLock<> berfungsi untuk melakukan sinkronisasi pada penggunaan Vec<Notification> karena bisa jadi ada akses bersamaan oleh banyak thread terhadap NOTIFICATIONS. Sinkronisasi ini diperlukan agar tidak terjadi data race.
+RwLock dipilih dibandingkan Mutex karena pada kasus ini operasi pembacaan (read) jauh lebih sering dilakukan dibandingkan penulisan (write). RwLock memungkinkan beberapa thread untuk membaca data bersamaan selama tidak ada thread yang sedang menulis. Sementara itu, Mutex hanya mengizinkan satu thread untuk mengakses data dalam satu waktu, baik untuk membaca maupun menulis. Oleh karena itu, RwLock lebih efisien digunakan dalam kasus ini.
+2. Rust tidak mengizinkan perubahan (mutation) langsung pada variabel static karena memiliki jaminan keamanan (safety guarantees) yang ketat. Bedanya dengan Java, yaitu variabel static dapat diubah melalui fungsi statis, hal tersebut bisa menyebabkan data race dalam lingkungan multi-threading.
+Rust menjalankan keamanan thread (thread-safety) pada saat kompilasi. Jika ingin menggunakan variabel static yang dapat diubah, maka harus secara eksplisit menggunakan mekanisme sinkronisasi seperti RwLock atau Mutex. Oleh karena itu, digunakan lazy_static yang dikombinasikan dengan RwLock, sehingga compiler Rust dapat memastikan bahwa akses terhadap variabel tersebut tetap aman.
 
 #### Reflection Subscriber-2
